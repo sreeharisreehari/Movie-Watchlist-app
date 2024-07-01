@@ -4,3 +4,11 @@
   font-style: italic;
   
 }
+.header{
+  float: right;
+}
+.search{
+  background-color: #a3b0cc;
+  border-radius: 10px;
+}
+

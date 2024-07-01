@@ -1,14 +1,45 @@
 import React from 'react'
+import Button from 'react-bootstrap/Button';
+import Container from 'react-bootstrap/Container';
+import Nav from 'react-bootstrap/Nav';
+import Navbar from 'react-bootstrap/Navbar';
+import { BiSolidCameraMovie } from "react-icons/bi";
+import Form from 'react-bootstrap/Form';
 
 function Header() {
   return (
     <div>
 
-<div className="navbar navbar-expand-lg bg-dark" data-bs-theme="dark">
+{/* <div className="navbar navbar-expand-lg bg-dark" data-bs-theme="dark">
   <div className="container d-flex justify-content-center">
-    <h2 className="title mx-auto">Mr Filmer</h2>
+    <h2 className="title mx-auto text-warning">Mr Filmer</h2>
   </div>
-</div>
+</div> */}
+<Navbar expand="lg" className="bg-dark">
+  <Container fluid>
+    <Navbar.Brand  style={{fontSize:'22px'}} href="#" className="title text-warning  "><BiSolidCameraMovie style={{fontSize:'27px'}} /> Mr Filmer</Navbar.Brand>
+    <Navbar.Toggle aria-controls="navbarScroll" />
+    <Navbar.Collapse id="navbarScroll">
+      <Nav className="ms-auto my-2 my-lg-0 me-5" style={{ maxHeight: '100px' }} navbarScroll>
+        <Nav.Link style={{fontSize:'19px'}} className='text-white me-3' href="/">Home</Nav.Link>
+        <Nav.Link style={{fontSize:'19px'}} className='text-white me-3' href="/addmovies">Add Movies</Nav.Link>
+        <Nav.Link style={{fontSize:'19px'}} className='text-white me-3' href="#action2">Manage Watchlist</Nav.Link>
+      
+      </Nav>
+      <Form className="d-flex">
+            <Form.Control
+              type="search"
+              placeholder="Search movies"
+              className="search me-2"
+              aria-label="Search "
+              style={{borderRadius:'10px'}}
+            />
+            <Button variant="outline-success">Search</Button>
+          </Form> 
+    </Navbar.Collapse>
+  </Container>
+</Navbar>
+
 
 
         
