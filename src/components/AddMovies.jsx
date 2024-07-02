@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { Card, Form, Button, Container, Row, Col } from 'react-bootstrap';
+import { useDispatch } from 'react-redux';
+import { addmovies } from '../Redux/Movieslice';
 
 function AddMovies() {
 
@@ -13,7 +15,6 @@ function AddMovies() {
       });
       console.log(movieData);
 
-    const [selectedFile, setSelectedFile] = useState(null);
 
     const handleFileChange = (event) => {
         const file = event.target.files[0];
@@ -24,29 +25,69 @@ function AddMovies() {
           imageUrl: imageUrl,
         });
       };
+
+
+      const dispatch = useDispatch();
+
+  const handleAdd = async (e) => {
+    e.preventDefault();
+
+    const { title, description, releaseDate, genre, image, imageUrl } = movieData;
+
+    if (!title || !description || !releaseDate || !genre || !image || !imageUrl) {
+      alert('Please fill the form completely');
+    } else {
+      const reqbody = new FormData();
+      reqbody.append('title', title);
+      reqbody.append('description', description);
+      reqbody.append('releaseDate', releaseDate);
+      reqbody.append('genre', genre);
+      reqbody.append('image', image);
+      reqbody.append('imageUrl', imageUrl);
+
+      
+        const reqheader = {
+          'Content-Type': 'multipart/form-data'
+         
+        };
+
+        const resultAction = await dispatch(addmovies({ reqbody, reqheader }));
+        if (addmovies.fulfilled.match(resultAction)) {
+          alert('Movie added successfully');
+          
+        } else {
+          alert(resultAction.payload);
+        }
+      
+    }
+  };
     
   return (
     <>
       <Container className='d-flex justify-content-center mt-5'>
+
         <Card className='card shadow' style={{ width: '100%', maxWidth: '600px',borderRadius:'10px' }}>
+
           <Card.Body>
+
             <h3 className='text-center mb-4'>Add Movies</h3>
+
             <Form>
               <Form.Group className='mb-3' controlId='formTitle'>
                 <Form.Label>Title</Form.Label>
-                <Form.Control type='text' placeholder='Enter movie title' />
+                <Form.Control type='text' placeholder='Enter movie title' value={movieData.title} onChange={(e)=>setMovieData({...movieData,title:e.target.value})} />
               </Form.Group>
               <Form.Group className='mb-3' controlId='formDescription'>
                 <Form.Label>Description</Form.Label>
-                <Form.Control as='textarea' rows={3} placeholder='Enter movie description' />
+                <Form.Control as='textarea' rows={3} placeholder='Enter movie description' value={movieData.description} onChange={(e)=>setMovieData({...movieData,description:e.target.value})}/>
               </Form.Group>
               <Form.Group className='mb-3' controlId='formRelease'>
                 <Form.Label>Release Date</Form.Label>
-                <Form.Control type='date' />
+                <Form.Control type='date' value={movieData.releaseDate} onChange={(e)=>setMovieData({...movieData,releaseDate:e.target.value})} />
               </Form.Group>
               <Form.Group className='mb-3' controlId='formGenre'>
                 <Form.Label>Genre</Form.Label>
-                <Form.Control type='text' placeholder='Enter movie genre' />
+                <Form.Control type='text' placeholder='Enter movie genre' value={movieData.genre} onChange={(e)=>setMovieData({...movieData,genre:e.target.value})} />
               </Form.Group>
               <Form.Group className='mb-3' controlId='formImage'>
                 <Form.Label>Upload Image</Form.Label>
@@ -56,12 +97,16 @@ function AddMovies() {
                     <img src={movieData.imageUrl} alt='Movie' style={{ maxWidth: '100%', height: 'auto' }} />
                   </div>
                 )}
+
               </Form.Group>
+
               <div class="d-flex justify-content-center">
-  <Button className='mt-4' variant='primary' type='submit'>
+
+  <Button onClick={handleAdd} className='mt-4' variant='primary' type='submit'>
     Add
   </Button>
 </div>
+
 
             </Form>
           </Card.Body>

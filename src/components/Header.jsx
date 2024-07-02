@@ -23,7 +23,7 @@ function Header() {
       <Nav className="ms-auto my-2 my-lg-0 me-5" style={{ maxHeight: '100px' }} navbarScroll>
         <Nav.Link style={{fontSize:'19px'}} className='text-white me-3' href="/">Home</Nav.Link>
         <Nav.Link style={{fontSize:'19px'}} className='text-white me-3' href="/addmovies">Add Movies</Nav.Link>
-        <Nav.Link style={{fontSize:'19px'}} className='text-white me-3' href="#action2">Manage Watchlist</Nav.Link>
+        <Nav.Link style={{fontSize:'19px'}} className='text-white me-3' href="/managewatchlist">Manage Watchlist</Nav.Link>
       
       </Nav>
       <Form className="d-flex">
