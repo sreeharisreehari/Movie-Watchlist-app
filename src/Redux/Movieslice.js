@@ -114,18 +114,17 @@ const movieSlice = createSlice({
 
 
       // to handle fetchmovies actions
-      .addCase(fetchAllMovies.pending, (state) => {
+       .addCase(fetchAllMovies.pending, (state) => {
         state.status = 'loading';
       })
       .addCase(fetchAllMovies.fulfilled, (state, action) => {
-        state.status = 'succeeded';
+        state.status = 'succeeded';    
         state.films = action.payload;
       })
       .addCase(fetchAllMovies.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload;
       })
-
   
       // to handle update movie actions
       .addCase(updatemovie.pending, (state) => {
@@ -158,6 +157,7 @@ const movieSlice = createSlice({
       })
 
   
+  
       // to handle add reviews actions
       .addCase(addReviewss.pending, (state) => {
         state.status = 'loading';
@@ -174,3 +174,4 @@ const movieSlice = createSlice({
 });
 
 export default movieSlice.reducer;
+   

@@ -5,16 +5,17 @@ import { fetchAllMovies } from '../Redux/Movieslice';
 import { BASE_URL } from '../services/baseurl';
 import { useNavigate } from 'react-router-dom';
 import { Button } from 'react-bootstrap';
+import { bouncy } from 'ldrs'
+
+
+
+bouncy.register()
+
+
 
 function Home() {
-  const dispatch = useDispatch();
-  const { films } = useSelector((state) => state.films);
-
   const navigate = useNavigate();
 
-  useEffect(() => {
-    dispatch(fetchAllMovies());
-  }, [dispatch]);
 
   const [watchedStatus, setWatchedStatus] = useState(() => {
 
@@ -23,6 +24,31 @@ function Home() {
     return savedStatus ? JSON.parse(savedStatus) : {};
   });
 
+  const dispatch = useDispatch();
+  const { films, status, error } = useSelector((state) => state.films);
+
+  useEffect(() => {
+    if (status === 'idle') {
+      dispatch(fetchAllMovies());
+    }
+  }, [status, dispatch]);
+
+  if (status === 'loading') {
+    return <div className="d-flex justify-content-center align-items-center vh-100">
+    <l-bouncy
+      size="85"
+      speed="1.75"
+      color="white"
+    ></l-bouncy>
+  </div>;
+  }
+
+  if (status === 'failed') {
+    return <div>Error: {error}</div>;
+  }
+
+
+ 
 
 
   const handleToggle = (id) => {
