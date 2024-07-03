@@ -22,7 +22,7 @@ function Header() {
         <Nav.Link style={{fontSize:'19px'}} className='text-white me-3' href="/managewatchlist">Manage Watchlist</Nav.Link>
       
       </Nav>
-      <Form className="d-flex">
+      {/* <Form className="d-flex">
 
             <Form.Control
               type="search"
@@ -34,9 +34,10 @@ function Header() {
 
             <Button variant="outline-success">Search</Button>
 
-          </Form> 
+          </Form>  */}
+          
     </Navbar.Collapse>
-    
+
   </Container>
 </Navbar>
 
