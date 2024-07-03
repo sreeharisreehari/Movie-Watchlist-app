@@ -1,7 +1,7 @@
-
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { BASE_URL } from '../services/baseurl';
+
 
 
 // to handle adding movies
@@ -9,20 +9,23 @@ export const addmovies = createAsyncThunk(
   '/movies/add',
   async (MovieesData, { rejectWithValue }) => {
     try {
+
       const { reqbody, reqheader } = MovieesData;
+
       const response = await axios.post(`${BASE_URL}/movies/add`, reqbody, { headers: reqheader });
       return response.data;
-    } catch (error) {
+   } catch (error) {
+
       return rejectWithValue(error.response.data);
     }
   }
 );
 
 
-//to get all movies
+// to get all movies
 export const fetchAllMovies = createAsyncThunk(
   'movies/fetchAll',
-  async (_, { rejectWithValue, dispatch }) => {
+  async (_, { rejectWithValue }) => {
     try {
       const reqheader = {
         'Content-Type': 'application/json',
@@ -36,29 +39,33 @@ export const fetchAllMovies = createAsyncThunk(
 );
 
 
-  // to edit movies
+
+// to edit movies
 export const updatemovie = createAsyncThunk(
-    '/movie/edit/',
-    async (MovieesData, { rejectWithValue }) => {
-      try {
-        const { id, reqbody, reqheader } = MovieesData;
-        const response = await axios.put(`${BASE_URL}/movie/edit/${id}`, reqbody, { headers: reqheader });
-        return response.data;
-      } catch (error) {
-        return rejectWithValue(error.response.data);
-      }
+  '/movie/edit/',
+  async (MovieesData, { rejectWithValue }) => {
+    try {
+      const { id, reqbody, reqheader } = MovieesData;
+      const response = await axios.put(`${BASE_URL}/movie/edit/${id}`, reqbody, { headers: reqheader });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
     }
-  );
+  }
+);
 
 
-  // delete movie
+// delete movie
 export const deleteMovie = createAsyncThunk(
   '/movie/remove/',
-  async (id, { rejectWithValue }) => {
+  async (id, { rejectWithValue, dispatch }) => {
+
     try {
       const reqheader = { "Content-Type": "application/json" };
       const response = await axios.delete(`${BASE_URL}/movie/remove/${id}`, { headers: reqheader });
-      return response.data 
+
+      dispatch(fetchAllMovies());
+      return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
     }
@@ -80,6 +87,7 @@ export const addReviewss = createAsyncThunk(
   }
 );
 
+
 const movieSlice = createSlice({
   name: 'films',
   initialState: {
@@ -87,11 +95,11 @@ const movieSlice = createSlice({
     status: 'idle',
     error: null,
   },
-  reducers: {
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder
-      // to Handle add actions
+
+      // to handle add actions
       .addCase(addmovies.pending, (state) => {
         state.status = 'loading';
       })
@@ -104,7 +112,8 @@ const movieSlice = createSlice({
         state.error = action.payload;
       })
 
-      //to handle fetchmovies actions
+
+      // to handle fetchmovies actions
       .addCase(fetchAllMovies.pending, (state) => {
         state.status = 'loading';
       })
@@ -117,7 +126,8 @@ const movieSlice = createSlice({
         state.error = action.payload;
       })
 
-      //to handle updateMovie actions
+  
+      // to handle update movie actions
       .addCase(updatemovie.pending, (state) => {
         state.status = 'loading';
       })
@@ -133,21 +143,23 @@ const movieSlice = createSlice({
         state.error = action.payload;
       })
 
-      //to handle deletemovie actions
+
+      // to handle delete movie actions
       .addCase(deleteMovie.pending, (state) => {
         state.status = 'loading';
       })
       .addCase(deleteMovie.fulfilled, (state, action) => {
         state.status = 'succeeded';
-        state.films = state.films.filter(film => film.id !== action.payload);
+        state.films = state.films.filter(film => film.id !== action.meta.arg);
       })
       .addCase(deleteMovie.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload;
       })
 
-       //to handle addMovies actions
-       .addCase(addReviewss.pending, (state) => {
+  
+      // to handle add reviews actions
+      .addCase(addReviewss.pending, (state) => {
         state.status = 'loading';
       })
       .addCase(addReviewss.fulfilled, (state, action) => {
@@ -158,9 +170,7 @@ const movieSlice = createSlice({
         state.status = 'failed';
         state.error = action.payload;
       });
-
   },
 });
-
 
 export default movieSlice.reducer;
