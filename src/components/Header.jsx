@@ -10,11 +10,7 @@ function Header() {
   return (
     <div>
 
-{/* <div className="navbar navbar-expand-lg bg-dark" data-bs-theme="dark">
-  <div className="container d-flex justify-content-center">
-    <h2 className="title mx-auto text-warning">Mr Filmer</h2>
-  </div>
-</div> */}
+
 <Navbar expand="lg" className="bg-dark">
   <Container fluid>
     <Navbar.Brand  style={{fontSize:'22px'}} href="#" className="title text-warning  "><BiSolidCameraMovie style={{fontSize:'27px'}} /> Mr Filmer</Navbar.Brand>
@@ -27,6 +23,7 @@ function Header() {
       
       </Nav>
       <Form className="d-flex">
+
             <Form.Control
               type="search"
               placeholder="Search movies"
@@ -34,9 +31,12 @@ function Header() {
               aria-label="Search "
               style={{borderRadius:'10px'}}
             />
+
             <Button variant="outline-success">Search</Button>
+
           </Form> 
     </Navbar.Collapse>
+    
   </Container>
 </Navbar>
 

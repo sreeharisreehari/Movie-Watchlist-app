@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Card, Form, Button, Container, Row, Col } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 import { addmovies } from '../Redux/Movieslice';
+import Swal from 'sweetalert2';
+
 
 function AddMovies() {
 
@@ -16,19 +18,34 @@ function AddMovies() {
       console.log(movieData);
 
 
-    const handleFileChange = (event) => {
+      const handleFileChange = (event) => {
         const file = event.target.files[0];
-        const imageUrl = URL.createObjectURL(file);
-        setMovieData({
-          ...movieData,
-          image: file,
-          imageUrl: imageUrl,
-        });
+
+        if (!file) {
+          console.error("No file selected");
+          return;
+        }
+      
+        try {
+
+          const imageUrl = URL.createObjectURL(file);
+
+          setMovieData({
+            ...movieData,
+            image: file,
+            imageUrl: imageUrl,
+          });
+
+        } catch (error) {
+          console.error("Error creating in object URL:", error);
+        }
       };
 
 
       const dispatch = useDispatch();
 
+
+      // add movies
   const handleAdd = async (e) => {
     e.preventDefault();
 
@@ -42,6 +59,7 @@ function AddMovies() {
       reqbody.append('description', description);
       reqbody.append('releaseDate', releaseDate);
       reqbody.append('genre', genre);
+
       reqbody.append('image', image);
       reqbody.append('imageUrl', imageUrl);
 
@@ -53,11 +71,32 @@ function AddMovies() {
 
         const resultAction = await dispatch(addmovies({ reqbody, reqheader }));
         if (addmovies.fulfilled.match(resultAction)) {
-          alert('Movie added successfully');
+          Swal.fire({
+            icon:'success',
+            title: 'Movie added Successfully',
+            showClass: {
+              popup: 'animate__animated animate__fadeInDown'
+            },
+            hideClass: {
+              popup: 'animate__animated animate__fadeOutUp'
+            }
+          })
+
           
         } else {
           alert(resultAction.payload);
         }
+
+        setMovieData({
+          title:"",
+          description:"",
+          releaseDate:"",
+          genre:"",
+          image:"",
+          imageUrl:""
+
+        })
+       
       
     }
   };
@@ -89,12 +128,14 @@ function AddMovies() {
                 <Form.Label>Genre</Form.Label>
                 <Form.Control type='text' placeholder='Enter movie genre' value={movieData.genre} onChange={(e)=>setMovieData({...movieData,genre:e.target.value})} />
               </Form.Group>
+
+              
               <Form.Group className='mb-3' controlId='formImage'>
                 <Form.Label>Upload Image</Form.Label>
                 <Form.Control  type='file' onChange={handleFileChange} />
                 {movieData.imageUrl && (
                   <div className='mt-2'>
-                    <img src={movieData.imageUrl} alt='Movie' style={{ maxWidth: '100%', height: 'auto' }} />
+                    <img src={movieData.imageUrl} alt='Movie' style={{ maxWidth: '100%', height: '400px' }} />
                   </div>
                 )}
 

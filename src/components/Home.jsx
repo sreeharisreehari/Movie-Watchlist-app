@@ -1,30 +1,40 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react';
 import Card from 'react-bootstrap/Card';
-import ListGroup from 'react-bootstrap/ListGroup';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
 import { fetchAllMovies } from '../Redux/Movieslice';
 import { BASE_URL } from '../services/baseurl';
 import { useNavigate } from 'react-router-dom';
+import { Button } from 'react-bootstrap';
+
 function Home() {
-
-
-
   const dispatch = useDispatch();
   const { films } = useSelector((state) => state.films);
 
   const navigate = useNavigate();
 
-
-
   useEffect(() => {
-      dispatch(fetchAllMovies());
-
+    dispatch(fetchAllMovies());
   }, [dispatch]);
 
- 
+  const [watchedStatus, setWatchedStatus] = useState(() => {
 
-  console.log(films);
+
+    const savedStatus = localStorage.getItem('watchedStatus');
+    return savedStatus ? JSON.parse(savedStatus) : {};
+  });
+
+
+
+  const handleToggle = (id) => {
+    setWatchedStatus((prevStatus) => {
+      const newStatus = { ...prevStatus, [id]: true };
+
+    
+      localStorage.setItem('watchedStatus', JSON.stringify(newStatus));
+
+      return newStatus;
+    });
+  };
 
   const handleCardClick = (item) => {
     navigate(`/moviedetails/${item._id}`, { state: { item } });
@@ -32,38 +42,53 @@ function Home() {
 
   return (
     <div>
-<section>
-  
+      <section>
         <h3 className='text-center mt-5'>My Watchlist</h3>
-</section>
-    <div className='container'>
-        <div className='row mt-5'>
-         
-            {
-              films && films.length > 0? (
-              films.map((item)=>(
-            <div className='col-12 col-md-6 col-lg-3 mb-4'>
-  
-           
-            
-                <Card key={item._id} style={{ width: '18rem',borderRadius:'10px' }} onClick={() => handleCardClick(item)}>
-        <Card.Img style={{borderRadius:'10px'}} variant="top" src={`${BASE_URL}/uploads/${item.image}`} />
-        <Card.Body>
-  <Card.Link href="#">{item.title}</Card.Link>
-  <Card.Link href="#">Another Link</Card.Link>
-  </Card.Body>
-      </Card>
-             
-  
-  </div>
-    ))
-  ):null
-    }
 
+      </section>
+      <div className='container'>
+
+        <div className='row mt-5'>
+          {films && films.length > 0 ? (
+            films.map((item) => (
+              <div className='col-12 col-md-6 col-lg-3 mb-4' key={item._id}>
+                
+                <Card style={{ width: '18rem', borderRadius: '10px' }}>
+                  <Card.Img style={{ borderRadius: '10px' }} variant="top" src={`${BASE_URL}/uploads/${item.image}`} />
+                  <Card.Body>
+
+                    <div className='row'>
+
+                      <div className='col-6'>
+                        <Button variant="warning" onClick={() => handleCardClick(item)}>
+                          More info
+                        </Button>
+                      </div>
+                      <div className='col-6'>
+
+                        <label className='mt-2'>
+                          <input
+                            className='text-warning'
+                            type="checkbox"
+                            checked={watchedStatus[item._id] || false}
+                            onChange={() => handleToggle(item._id)}
+                            disabled={watchedStatus[item._id]} 
+                          />
+
+                          {watchedStatus[item._id] ? 'Watched' : 'Unwatched'}
+                        </label>
+                      </div>
+
+                    </div>
+                  </Card.Body>
+                </Card>
+              </div>
+            ))
+          ) : null}
         </div>
+      </div>
     </div>
-    </div>
-  )
+  );
 }
 
-export default Home
+export default Home;

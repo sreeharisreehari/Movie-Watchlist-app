@@ -1,159 +1,161 @@
-import React, { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
-import { Form } from 'react-bootstrap';
-import { useDispatch } from 'react-redux';
+import {  Form } from 'react-bootstrap';
+import { useDispatch, useSelector } from 'react-redux';
 import { updatemovie } from '../Redux/Movieslice';
 import { BASE_URL } from '../services/baseurl';
+import Swal from 'sweetalert2';
 
-const Edit = ({ movie }) => {
+
+
+function Edit({project}) {
   const [show, setShow] = useState(false);
-  const dispatch = useDispatch();
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
-  const [movieData, setMovieData] = useState({
-    title: '',
-    description: '',
-    releaseDate: '',
-    genre: '',
-    image: null,
-    imageUrl: '',
-  });
+
+ 
+
+
+  const [preview,setpreview]=useState("")
+
+  const [movieDetails,setmovieDetails]=useState({
+    id:project._id,
+      title:project.title,
+      description:project.description,
+      releaseDate :project.releaseDate,
+      genre :project.genre,
+      image:""
+      
+
+
+
+  })
+  console.log(movieDetails);
+
+  
+
+ 
+  const dispatch = useDispatch();
+
+  const { status, error } = useSelector(state => state.films); 
 
   useEffect(() => {
-    if (movie) {
-      setMovieData({
-        title: movie.title,
-        description: movie.description,
-        releaseDate: movie.releaseDate,
-        genre: movie.genre,
-        image: null,
-        imageUrl: movie.imageUrl,
-      });
+    if (movieDetails.image) {
+      setpreview(URL.createObjectURL(movieDetails.image));
     }
-  }, [movie]);
+  }, [movieDetails.image]);
 
-  const handleFileChange = (event) => {
-    const file = event.target.files[0];
-    const imageUrl = URL.createObjectURL(file);
-    setMovieData({
-      ...movieData,
-      image: file,
-      imageUrl: imageUrl,
-    });
-  };
 
-  const handleInputChange = (event) => {
-    const { name, value } = event.target;
-    setMovieData({
-      ...movieData,
-      [name]: value,
-    });
-  };
+  // edit movies
+  const handleUpdate = async () => {
+    const { id, title,  description,  releaseDate,   genre, image } = movieDetails;
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const reqbody = new FormData();
-    reqbody.append('title', movieData.title);
-    reqbody.append('description', movieData.description);
-    reqbody.append('releaseDate', movieData.releaseDate);
-    reqbody.append('genre', movieData.genre);
-    if (movieData.image) {
-      reqbody.append('image', movieData.image);
-    }
+    if (!title || ! description || ! releaseDate || !  genre ) {
+      alert('Please fill the form completely');
+    } else {
+      const reqbody = new FormData();
 
-    const reqheader = {
-      'Content-Type': 'multipart/form-data',
-    };
+      reqbody.append("title", title);
+      reqbody.append(" description",  description);
+      reqbody.append(" releaseDate",  releaseDate);
+      reqbody.append("genre",   genre);
 
-    dispatch(updatemovie({ id: movie.id, reqbody, reqheader }));
-    handleClose();
-  };
+      preview ? reqbody.append("image", image) : reqbody.append("image", project.image);
+
+      const reqheader = {
+        "Content-Type": preview ? "multipart/form-data" : "application/json",
+      };
+
+      const resultAction = await dispatch(updatemovie({id, reqbody, reqheader }));
+
+      if (updatemovie.fulfilled.match(resultAction)) {
+        Swal.fire({
+          icon:'success',
+          title: 'Updated Successfully',
+          showClass: {
+            popup: 'animate__animated animate__fadeInDown'
+          },
+          hideClass: {
+            popup: 'animate__animated animate__fadeOutUp'
+          }
+        })
+        handleClose()
+        
+      } else {
+        alert(resultAction.payload);
+      }
+    
+  }
+};
+
+
+
 
   return (
     <>
-      <i onClick={handleShow} className="fa-solid fa-pen-to-square ms-3"></i>
+      <i onClick={handleShow} class="fa-solid fa-pen-to-square  ms-3"></i>
 
       <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
-          <Modal.Title>Edit Movie</Modal.Title>
+          <Modal.Title>Edit Movies</Modal.Title>
         </Modal.Header>
-        <Modal.Body>
-          <Form onSubmit={handleSubmit}>
-            <div className="d-flex justify-content-center align-items-center">
-              <label htmlFor="image" className="d-flex flex-column align-items-center">
-                <input
-                  id="image"
-                  type="file"
-                  style={{ display: 'none' }}
-                  onChange={handleFileChange}
-                />
-                <img
-                  className=""
-                  src={`${BASE_URL}/uploads/${movie.image}`}
-                  alt=""
-                  width="140px"
-                  height="180px"
-                />
-              </label>
-            </div>
-            <Form.Group className="mb-3" controlId="formTitle">
-              <Form.Label>Title</Form.Label>
-              <Form.Control
-                type="text"
-                name="title"
-                placeholder="Enter movie title"
-                value={movieData.title}
-                onChange={handleInputChange}
-              />
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="formDescription">
-              <Form.Label>Description</Form.Label>
-              <Form.Control
-                as="textarea"
-                rows={3}
-                name="description"
-                placeholder="Enter movie description"
-                value={movieData.description}
-                onChange={handleInputChange}
-              />
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="formReleaseDate">
-              <Form.Label>Release Date</Form.Label>
-              <Form.Control
-                type="date"
-                name="releaseDate"
-                value={movieData.releaseDate}
-                onChange={handleInputChange}
-              />
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="formGenre">
-              <Form.Label>Genre</Form.Label>
-              <Form.Control
-                type="text"
-                name="genre"
-                placeholder="Enter movie genre"
-                value={movieData.genre}
-                onChange={handleInputChange}
-              />
-            </Form.Group>
-            <div className="d-flex justify-content-center">
-              <Button className="mt-4" variant="primary" type="submit">
-                Update
-              </Button>
-            </div>
-          </Form>
-        </Modal.Body>
+        <Modal.Body> <Form>
+
+        <div class="d-flex justify-content-center align-items-center" >
+  <label htmlFor="imag" class="d-flex flex-column align-items-center">
+    <input 
+      id='imag' 
+      type="file" 
+      style={{ display: 'none' }} 
+      onChange={(e)=>setmovieDetails({...movieDetails,image:e.target.files[0]})} 
+
+    />
+    <img 
+      className='' 
+      alt=""  
+      width='140px' 
+      height='180px' 
+      src={preview?preview:`${BASE_URL}/uploads/${project.image}`}
+    />
+  </label>
+</div>
+
+              <Form.Group className='mb-3' controlId='formTitle'>
+                <Form.Label>Title</Form.Label>
+                <Form.Control type='text' placeholder='Enter movie title' value={movieDetails.title} onChange={(e)=>setmovieDetails({...movieDetails,title:e.target.value})} />
+              </Form.Group>
+              <Form.Group className='mb-3' controlId='formDescription'>
+                <Form.Label>Description</Form.Label>
+                <Form.Control as='textarea' rows={3} placeholder='Enter movie description' value={movieDetails.description} onChange={(e)=>setmovieDetails({...movieDetails,description:e.target.value})} />
+              </Form.Group>
+              <Form.Group className='mb-3' controlId='formRelease'>
+                <Form.Label>Release Date</Form.Label>
+                <Form.Control type='date' value={movieDetails.releaseDate} onChange={(e)=>setmovieDetails({...movieDetails,releaseDate:e.target.value})}/>
+              </Form.Group>
+              <Form.Group className='mb-3' controlId='formGenre'>
+                <Form.Label>Genre</Form.Label>
+                <Form.Control type='text' placeholder='Enter movie genre' value={movieDetails.genre} onChange={(e)=>setmovieDetails({...movieDetails,genre:e.target.value})}/>
+              </Form.Group>
+
+             
+             
+             
+
+            </Form></Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>
             Close
+          </Button>
+          <Button variant="primary" onClick={handleUpdate}>
+            Save Changes
           </Button>
         </Modal.Footer>
       </Modal>
     </>
   );
-};
+}
 
 export default Edit;
