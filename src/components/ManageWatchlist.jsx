@@ -4,7 +4,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchAllMovies, deleteMovie } from '../Redux/Movieslice'; 
 import Edit from './Edit';
 import Swal from 'sweetalert2';
+import { bouncy } from 'ldrs'
 
+
+
+bouncy.register()
 
 function ManageWatchlist() {
   const dispatch = useDispatch();
@@ -80,7 +84,11 @@ function ManageWatchlist() {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="4" className="text-center">No movies found</td>
+                    <td colSpan="4" className="text-center"> <l-bouncy
+      size="45"
+      speed="1.75"
+      color="white"
+    ></l-bouncy></td>
                   </tr>
 
                 )}

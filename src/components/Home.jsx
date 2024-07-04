@@ -77,38 +77,33 @@ function Home() {
         <div className='row mt-5'>
           {films && films.length > 0 ? (
             films.map((item) => (
-              <div className='col-12 col-md-6 col-lg-3 mb-4' key={item._id}>
-                
-                <Card style={{ width: '18rem', borderRadius: '10px' }}>
-                  <Card.Img style={{ borderRadius: '10px' }} variant="top" src={`${BASE_URL}/uploads/${item.image}`} />
-                  <Card.Body>
-
-                    <div className='row'>
-
-                      <div className='col-6'>
-                        <Button variant="warning" onClick={() => handleCardClick(item)}>
-                          More info
-                        </Button>
-                      </div>
-                      <div className='col-6'>
-
-                        <label className='mt-2'>
-                          <input
-                            className='text-warning'
-                            type="checkbox"
-                            checked={watchedStatus[item._id] || false}
-                            onChange={() => handleToggle(item._id)}
-                            disabled={watchedStatus[item._id]} 
-                          />
-
-                          {watchedStatus[item._id] ? 'Watched' : 'Unwatched'}
-                        </label>
-                      </div>
-
+              <div className='col-12 col-md-6 col-lg-3 mb-4 d-flex justify-content-center'>
+              <Card style={{ width: '18rem', borderRadius: '10px' }}>
+                <Card.Img style={{ borderRadius: '10px' }} variant="top" src={`${BASE_URL}/uploads/${item.image}`} />
+                <Card.Body>
+                  <div className='row'>
+                    <div className='col-6'>
+                      <Button variant="warning" onClick={() => handleCardClick(item)}>
+                        More info
+                      </Button>
                     </div>
-                  </Card.Body>
-                </Card>
-              </div>
+                    <div className='col-6'>
+                      <label className='mt-2'>
+                        <input
+                          className='text-warning'
+                          type="checkbox"
+                          checked={watchedStatus[item._id] || false}
+                          onChange={() => handleToggle(item._id)}
+                          disabled={watchedStatus[item._id]} 
+                        />
+                        {watchedStatus[item._id] ? 'Watched' : 'Unwatched'}
+                      </label>
+                    </div>
+                  </div>
+                </Card.Body>
+              </Card>
+            </div>
+            
             ))
           ) : null}
         </div>
